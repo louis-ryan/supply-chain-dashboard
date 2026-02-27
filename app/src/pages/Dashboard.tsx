@@ -5,7 +5,6 @@ import {
 import { KPICard } from '../components/KPICard'
 import { ChartCard } from '../components/ChartCard'
 import { StatusBadge } from '../components/StatusBadge'
-import { PageHeader } from '../components/PageHeader'
 import { facilities, facilitiesByRegion } from '../data/facilities'
 import { suppliers, supplierTiers } from '../data/suppliers'
 import { shipmentVolume, recentShipments, onTimeRate } from '../data/shipments'
@@ -154,7 +153,7 @@ export function Dashboard() {
           </ChartCard>
 
           {/* Recent shipments table — spans 2 cols */}
-          <div className="lg:col-span-2 bg-[#1A1D27] border border-[#2E3347] rounded-xl overflow-hidden">
+          <div style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="lg:col-span-2 border rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#2E3347]">
               <h3 className="text-sm font-semibold text-white">Recent Shipments</h3>
               <span className="text-xs text-blue-400 cursor-pointer hover:underline">View all →</span>

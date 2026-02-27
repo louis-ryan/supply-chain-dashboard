@@ -2,6 +2,10 @@ import { create } from 'zustand'
 import type { Region, FacilityType, FacilityStatus, SupplierTier, RiskLevel, ProductCategory, StockStatus, ShipmentStatus } from '../types'
 
 interface FilterState {
+  // Theme
+  theme: 'dark' | 'light'
+  toggleTheme: () => void
+
   // Facilities
   facilityRegion: Region | 'All'
   facilityType: FacilityType | 'All'
@@ -39,6 +43,7 @@ interface FilterState {
 }
 
 const defaults = {
+  theme: 'dark' as const,
   facilityRegion: 'All' as const,
   facilityType: 'All' as const,
   facilityStatus: 'All' as const,
@@ -67,5 +72,10 @@ export const useStore = create<FilterState>(set => ({
   setShipmentStatus: v => set({ shipmentStatus: v }),
   setShipmentDateFrom: v => set({ shipmentDateFrom: v }),
   setShipmentDateTo: v => set({ shipmentDateTo: v }),
+  toggleTheme: () => set(s => {
+    const next = s.theme === 'dark' ? 'light' : 'dark'
+    document.documentElement.setAttribute('data-theme', next)
+    return { theme: next }
+  }),
   resetFilters: () => set(defaults),
 }))

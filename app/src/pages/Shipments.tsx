@@ -12,6 +12,7 @@ import { FilterChip } from '../components/FilterChip'
 import { EmptyState } from '../components/EmptyState'
 import { useStore } from '../store'
 import { shipments, shipmentVolume, onTimeRate } from '../data/shipments'
+import { exportCsv } from '../utils/exportCsv'
 import type { Shipment, ShipmentStatus } from '../types'
 
 const col = createColumnHelper<Shipment>()
@@ -73,7 +74,14 @@ export function Shipments() {
         title="Shipments"
         subtitle="Track shipment status, volumes and on-time performance"
         actions={
-          <button className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors">
+          <button
+            onClick={() => exportCsv(filtered.map(s => ({
+              ID: s.id, Origin: s.origin, Destination: s.destination, Carrier: s.carrier,
+              Status: s.status, Departure: s.departureDate, 'Expected Arrival': s.expectedArrival,
+              Value: s.value,
+            })), 'shipments')}
+            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+          >
             Export
           </button>
         }
@@ -116,37 +124,40 @@ export function Shipments() {
             ))}
           </div>
           <div className="flex items-center gap-1 w-full md:w-auto md:ml-auto">
-            <input type="date" value={shipmentDateFrom} onChange={e => setShipmentDateFrom(e.target.value)}
-              className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-2 py-1.5 text-xs text-slate-300 outline-none flex-1 md:flex-none" />
-            <span className="text-slate-500 text-xs">—</span>
-            <input type="date" value={shipmentDateTo} onChange={e => setShipmentDateTo(e.target.value)}
-              className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-2 py-1.5 text-xs text-slate-300 outline-none flex-1 md:flex-none" />
+            <input type="date" aria-label="Departure date from" value={shipmentDateFrom} onChange={e => setShipmentDateFrom(e.target.value)}
+              className="bg-transparent border rounded-lg px-2 py-1.5 text-xs text-slate-300 outline-none flex-1 md:flex-none" />
+            <span className="text-slate-500 text-xs" aria-hidden="true">—</span>
+            <input type="date" aria-label="Departure date to" value={shipmentDateTo} onChange={e => setShipmentDateTo(e.target.value)}
+              className="bg-transparent border rounded-lg px-2 py-1.5 text-xs text-slate-300 outline-none flex-1 md:flex-none" />
           </div>
           <input
             type="text"
             placeholder="Search shipments..."
+            aria-label="Search shipments by ID, origin or destination"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-44"
+            className="bg-transparent border rounded-lg px-3 py-1.5 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-44"
           />
-          <span className="text-xs text-slate-500 md:ml-0">{filtered.length} results</span>
+          <span role="status" aria-live="polite" className="text-xs text-slate-500 md:ml-0">{filtered.length} results</span>
         </div>
 
         {/* Table */}
-        <div className="bg-[#1A1D27] border border-[#2E3347] rounded-xl overflow-hidden">
+        <div style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Shipments">
               <thead>
                 <tr className="border-b border-[#2E3347]">
                   {table.getFlatHeaders().map(header => (
                     <th key={header.id}
+                      scope="col"
+                      aria-sort={header.column.getIsSorted() === 'asc' ? 'ascending' : header.column.getIsSorted() === 'desc' ? 'descending' : header.column.getCanSort() ? 'none' : undefined}
                       className="text-left px-4 py-3 text-slate-500 font-medium text-xs cursor-pointer hover:text-slate-300"
                       onClick={header.column.getToggleSortingHandler()}>
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400">↑</span>}
-                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400">↓</span>}
-                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600">↕</span>}
+                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
+                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
+                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600" aria-hidden="true">↕</span>}
                       </div>
                     </th>
                   ))}
@@ -168,10 +179,10 @@ export function Shipments() {
             </table>
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#2E3347] text-xs text-slate-400">
-            <span>Showing {Math.min(table.getState().pagination.pageIndex * 10 + 1, filtered.length)}–{Math.min((table.getState().pagination.pageIndex + 1) * 10, filtered.length)} of {filtered.length}</span>
+            <span role="status" aria-live="polite">Showing {Math.min(table.getState().pagination.pageIndex * 10 + 1, filtered.length)}–{Math.min((table.getState().pagination.pageIndex + 1) * 10, filtered.length)} of {filtered.length}</span>
             <div className="flex items-center gap-1">
-              <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
-              <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">→</button>
+              <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label="Previous page" className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
+              <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} aria-label="Next page" className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">→</button>
             </div>
           </div>
         </div>
@@ -179,7 +190,7 @@ export function Shipments() {
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
           {filtered.slice(0, 10).map(s => (
-            <div key={s.id} className="bg-[#1A1D27] border border-[#2E3347] rounded-xl p-4">
+            <div key={s.id} style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl p-4">
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <p className="text-xs font-mono text-slate-400">{s.id}</p>

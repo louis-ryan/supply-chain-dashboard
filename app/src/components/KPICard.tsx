@@ -11,12 +11,17 @@ export function KPICard({ label, value, change, changeLabel }: Props) {
   const isNeutral = change === undefined
 
   return (
-    <div className="bg-[#1A1D27] border border-[#2E3347] rounded-xl p-5 flex flex-col gap-3">
-      <span className="text-sm text-slate-400">{label}</span>
-      <span className="text-3xl font-semibold text-white">{value}</span>
+    <div
+      style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}
+      className="border rounded-xl p-5 flex flex-col gap-3"
+      role="region"
+      aria-label={label}
+    >
+      <span className="text-sm text-slate-400" aria-hidden="true">{label}</span>
+      <span className="text-3xl font-semibold text-white" aria-live="polite">{value}</span>
       {!isNeutral && (
         <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-          <span>{isPositive ? '↑' : '↓'}</span>
+          <span aria-hidden="true">{isPositive ? '↑' : '↓'}</span>
           <span>{changeLabel ?? `${Math.abs(change!)}% vs last year`}</span>
         </div>
       )}

@@ -10,6 +10,7 @@ import { StatusBadge } from '../components/StatusBadge'
 import { EmptyState } from '../components/EmptyState'
 import { useStore } from '../store'
 import { products, productsByCategory, stockTrend } from '../data/products'
+import { exportCsv } from '../utils/exportCsv'
 import type { Product, ProductCategory, StockStatus } from '../types'
 
 const col = createColumnHelper<Product>()
@@ -73,7 +74,13 @@ export function Products() {
         title="Products"
         subtitle="Manage product inventory, SKUs and stock levels"
         actions={
-          <button className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors">
+          <button
+            onClick={() => exportCsv(filtered.map(p => ({
+              SKU: p.sku, Name: p.name, Category: p.category, Supplier: p.supplierName,
+              Stock: p.stockLevel, Status: p.status, 'Unit Cost': p.unitCost, 'Lead Time (days)': p.leadTimeDays,
+            })), 'products')}
+            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+          >
             Export
           </button>
         }
@@ -112,43 +119,47 @@ export function Products() {
           <input
             type="text"
             placeholder="Search products..."
+            aria-label="Search products by name or SKU"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-44"
+            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-44"
           />
-          <select value={productCategory} onChange={e => setProductCategory(e.target.value as ProductCategory | 'All')}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto">
+          <select aria-label="Filter by category" value={productCategory} onChange={e => setProductCategory(e.target.value as ProductCategory | 'All')}
+            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto">
             {categories.map(c => <option key={c} value={c}>Category: {c}</option>)}
           </select>
-          <select value={productStatus} onChange={e => setProductStatus(e.target.value as StockStatus | 'All')}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto">
+          <select aria-label="Filter by stock status" value={productStatus} onChange={e => setProductStatus(e.target.value as StockStatus | 'All')}
+            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto">
             {statuses.map(s => <option key={s} value={s}>Status: {s}</option>)}
           </select>
           <input
             type="text"
             placeholder="Supplier..."
+            aria-label="Filter by supplier name"
             value={productSupplier}
             onChange={e => setProductSupplier(e.target.value)}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-36"
+            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-36"
           />
-          <span className="text-xs text-slate-500 md:ml-auto">{filtered.length} products</span>
+          <span role="status" aria-live="polite" className="text-xs text-slate-500 md:ml-auto">{filtered.length} products</span>
         </div>
 
         {/* Table */}
-        <div className="bg-[#1A1D27] border border-[#2E3347] rounded-xl overflow-hidden">
+        <div style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Products">
               <thead>
                 <tr className="border-b border-[#2E3347]">
                   {table.getFlatHeaders().map(header => (
                     <th key={header.id}
+                      scope="col"
+                      aria-sort={header.column.getIsSorted() === 'asc' ? 'ascending' : header.column.getIsSorted() === 'desc' ? 'descending' : header.column.getCanSort() ? 'none' : undefined}
                       className="text-left px-4 py-3 text-slate-500 font-medium text-xs cursor-pointer hover:text-slate-300"
                       onClick={header.column.getToggleSortingHandler()}>
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400">↑</span>}
-                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400">↓</span>}
-                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600">↕</span>}
+                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
+                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
+                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600" aria-hidden="true">↕</span>}
                       </div>
                     </th>
                   ))}
@@ -170,10 +181,10 @@ export function Products() {
             </table>
           </div>
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#2E3347] text-xs text-slate-400">
-            <span>Showing {Math.min(table.getState().pagination.pageIndex * 10 + 1, filtered.length)}–{Math.min((table.getState().pagination.pageIndex + 1) * 10, filtered.length)} of {filtered.length}</span>
+            <span role="status" aria-live="polite">Showing {Math.min(table.getState().pagination.pageIndex * 10 + 1, filtered.length)}–{Math.min((table.getState().pagination.pageIndex + 1) * 10, filtered.length)} of {filtered.length}</span>
             <div className="flex items-center gap-1">
-              <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
-              <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">→</button>
+              <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label="Previous page" className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
+              <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} aria-label="Next page" className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">→</button>
             </div>
           </div>
         </div>
@@ -181,7 +192,7 @@ export function Products() {
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
           {filtered.slice(0, 10).map(p => (
-            <div key={p.id} className="bg-[#1A1D27] border border-[#2E3347] rounded-xl p-4">
+            <div key={p.id} style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl p-4">
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <p className="text-sm font-medium text-white">{p.name}</p>

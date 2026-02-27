@@ -16,6 +16,7 @@ import { StatusBadge } from '../components/StatusBadge'
 import { EmptyState } from '../components/EmptyState'
 import { useStore } from '../store'
 import { facilities, facilitiesByRegion, facilitiesByType } from '../data/facilities'
+import { exportCsv } from '../utils/exportCsv'
 import type { Facility, Region, FacilityType, FacilityStatus } from '../types'
 
 const DONUT_COLORS = ['#3B6FFF', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6']
@@ -89,7 +90,13 @@ export function Facilities() {
         title="Facilities"
         subtitle="Manage and monitor all distribution facilities"
         actions={
-          <button className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors">
+          <button
+            onClick={() => exportCsv(filtered.map(f => ({
+              ID: f.id, Name: f.name, Region: f.region, Type: f.type,
+              Country: f.country, Status: f.status, Utilisation: `${f.utilisation}%`, Employees: f.employees,
+            })), 'facilities')}
+            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+          >
             Export
           </button>
         }
@@ -137,51 +144,57 @@ export function Facilities() {
           <input
             type="text"
             placeholder="Search facilities..."
+            aria-label="Search facilities by name or country"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-48"
+            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-48"
           />
           <select
+            aria-label="Filter by region"
             value={facilityRegion}
             onChange={e => setFacilityRegion(e.target.value as Region | 'All')}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
+            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
           >
             {regions.map(r => <option key={r} value={r}>Region: {r}</option>)}
           </select>
           <select
+            aria-label="Filter by type"
             value={facilityType}
             onChange={e => setFacilityType(e.target.value as FacilityType | 'All')}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
+            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
           >
             {types.map(t => <option key={t} value={t}>Type: {t}</option>)}
           </select>
           <select
+            aria-label="Filter by status"
             value={facilityStatus}
             onChange={e => setFacilityStatus(e.target.value as FacilityStatus | 'All')}
-            className="bg-[#1A1D27] border border-[#2E3347] rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
+            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
           >
             {statuses.map(s => <option key={s} value={s}>Status: {s}</option>)}
           </select>
-          <span className="text-xs text-slate-500 md:ml-auto">{filtered.length} facilities</span>
+          <span role="status" aria-live="polite" className="text-xs text-slate-500 md:ml-auto">{filtered.length} facilities</span>
         </div>
 
         {/* Table */}
-        <div className="bg-[#1A1D27] border border-[#2E3347] rounded-xl overflow-hidden">
+        <div style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm" aria-label="Facilities">
               <thead>
                 <tr className="border-b border-[#2E3347]">
                   {table.getFlatHeaders().map(header => (
                     <th
                       key={header.id}
+                      scope="col"
+                      aria-sort={header.column.getIsSorted() === 'asc' ? 'ascending' : header.column.getIsSorted() === 'desc' ? 'descending' : header.column.getCanSort() ? 'none' : undefined}
                       className="text-left px-4 py-3 text-slate-500 font-medium text-xs cursor-pointer select-none hover:text-slate-300"
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400">↑</span>}
-                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400">↓</span>}
-                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600">↕</span>}
+                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
+                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
+                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600" aria-hidden="true">↕</span>}
                       </div>
                     </th>
                   ))}
@@ -207,11 +220,11 @@ export function Facilities() {
 
           {/* Pagination */}
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#2E3347] text-xs text-slate-400">
-            <span>
+            <span role="status" aria-live="polite">
               Showing {table.getState().pagination.pageIndex * 10 + 1}–{Math.min((table.getState().pagination.pageIndex + 1) * 10, filtered.length)} of {filtered.length}
             </span>
             <div className="flex items-center gap-1">
-              <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
+              <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label="Previous page" className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
               {Array.from({ length: table.getPageCount() }, (_, i) => (
                 <button
                   key={i}
@@ -229,7 +242,7 @@ export function Facilities() {
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
           {filtered.slice(0, 10).map(f => (
-            <div key={f.id} className="bg-[#1A1D27] border border-[#2E3347] rounded-xl p-4">
+            <div key={f.id} style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl p-4">
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <p className="text-sm font-medium text-white">{f.name}</p>
