@@ -1,73 +1,94 @@
-# React + TypeScript + Vite
+# M2Flow — Supply Chain Analytics Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-featured supply chain analytics dashboard built with React 18, TypeScript, Tailwind CSS, Recharts, and TanStack Table. Covers facilities, suppliers, products, and shipments with rich data visualisations, filtering, CSV export, dark/light mode, and a mobile-first responsive layout.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Setup Instructions
 
-## React Compiler
+### Prerequisites
+- Node.js 18+
+- npm 9+
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Install and run
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# From the repo root
+cd app
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The app will start at `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Run tests
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd app
+npm test          # watch mode
+npm test -- --run # single run (CI)
+```
+
+### Build for production
+
+```bash
+cd app
+npm run build
+```
+
+Output goes to `app/dist/`. The included `vercel.json` at the repo root handles deployment to Vercel automatically.
+
+---
+
+## Pages
+
+| Page | Key Features |
+|------|-------------|
+| **Dashboard** | 4 KPI cards, shipment volume line chart, facilities by region bar chart, supplier tier donut chart, recent shipments table |
+| **Facilities** | Sortable/paginated table (50+ rows), region + type + status filters, bar + donut charts |
+| **Suppliers** | Risk rating column, tier badges, YoY trend arrows, compliance line chart, tier + risk + country filters |
+| **Products** | Category breakdown bar chart, stock level line chart, category + status + supplier filters |
+| **Shipments** | Status chips, volume line chart, on-time % trend, date range filter, swipeable status chips on mobile |
+
+All pages include CSV export and full ARIA labelling.
+
+---
+
+## Mobile-First Approach
+
+See [MOBILE_FIRST.md](../MOBILE_FIRST.md) for the full write-up covering navigation, tables, filter chips, charts, KPI cards, and the key challenges solved.
+
+---
+
+## AI Workflow
+
+See [AI_WORKFLOW.md](../AI_WORKFLOW.md) for the full write-up covering approach, key AI-assisted decisions, and what would be improved with more time.
+
+---
+
+## Tech Stack
+
+| Layer | Library |
+|-------|---------|
+| Framework | React 18 + TypeScript + Vite |
+| Styling | Tailwind CSS v4 |
+| Charts | Recharts |
+| Tables | TanStack Table v8 |
+| State / filters | Zustand |
+| Testing | Vitest |
+| Data | In-memory mock data (2020–2026) |
+
+---
+
+## Project Structure
+
+```
+app/src/
+├── data/        # Mock data generators (facilities, suppliers, products, shipments)
+├── components/  # Shared UI: KPICard, ChartCard, FilterChip, Layout, ThemeToggle
+├── pages/       # Dashboard, Facilities, Suppliers, Products, Shipments
+├── store/       # Zustand store (global filters, theme state)
+├── types/       # TypeScript interfaces for all entities
+├── utils/       # exportCsv, formatters
+└── test/        # Vitest filter logic tests (33 tests)
 ```

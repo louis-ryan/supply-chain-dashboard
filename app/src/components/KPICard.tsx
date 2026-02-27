@@ -1,7 +1,7 @@
 interface Props {
   label: string
   value: string | number
-  change?: number        // positive = up, negative = down
+  change?: number
   changeLabel?: string
   icon?: string
 }
@@ -12,13 +12,12 @@ export function KPICard({ label, value, change, changeLabel }: Props) {
 
   return (
     <div
-      style={{ background: 'var(--bg-surface)', borderColor: 'var(--border)' }}
-      className="border rounded-xl p-5 flex flex-col gap-3"
+      className="border border-border rounded-xl p-5 flex flex-col gap-3 bg-bg-surface"
       role="region"
       aria-label={label}
     >
-      <span className="text-sm text-slate-400" aria-hidden="true">{label}</span>
-      <span className="text-3xl font-semibold text-white" aria-live="polite">{value}</span>
+      <span className="text-sm text-muted">{label}</span>
+      <span className="text-3xl font-semibold text-primary" aria-live="polite">{value}</span>
       {!isNeutral && (
         <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
           <span aria-hidden="true">{isPositive ? '↑' : '↓'}</span>

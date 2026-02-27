@@ -19,7 +19,7 @@ function NavItem({ path, label, icon }: { path: string; label: string; icon: str
         `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
           isActive
             ? 'bg-blue-500/15 text-blue-400 font-medium'
-            : 'text-slate-400 hover:text-white hover:bg-white/5'
+            : 'text-muted hover:text-primary hover:bg-white/5'
         }`
       }
     >
@@ -33,11 +33,11 @@ export function Layout() {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar — desktop */}
-      <aside aria-label="Main navigation" style={{ background: 'var(--bg-sidebar)', borderColor: 'var(--border)' }} className="hidden md:flex flex-col w-16 lg:w-56 border-r flex-shrink-0">
-        <div className="p-4" style={{ borderBottom: '1px solid var(--border)' }}>
+      <aside aria-label="Main navigation" className="hidden md:flex flex-col w-16 lg:w-56 border-r border-border flex-shrink-0 bg-bg-sidebar">
+        <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-blue-500 rounded-md flex items-center justify-center text-white text-xs font-bold">M2</div>
-            <span className="hidden lg:block text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>M2Flow</span>
+            <span className="hidden lg:block text-sm font-semibold text-primary">M2Flow</span>
           </div>
         </div>
         <nav className="flex-1 p-3 flex flex-col gap-1">
@@ -45,7 +45,7 @@ export function Layout() {
             <NavItem key={item.path} {...item} />
           ))}
         </nav>
-        <div className="p-3 flex items-center justify-center lg:justify-start" style={{ borderTop: '1px solid var(--border)' }}>
+        <div className="p-3 flex items-center justify-center lg:justify-start border-t border-border">
           <ThemeToggle />
         </div>
       </aside>
@@ -57,7 +57,7 @@ export function Layout() {
         </main>
 
         {/* Bottom tab bar — mobile */}
-        <nav aria-label="Mobile navigation" style={{ background: 'var(--bg-sidebar)', borderColor: 'var(--border)' }} className="md:hidden fixed bottom-0 left-0 right-0 border-t flex z-50">
+        <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-0 left-0 right-0 border-t border-border flex z-50 bg-bg-sidebar">
           {navItems.map(({ path, label, icon }) => (
             <NavLink
               key={path}
@@ -66,7 +66,7 @@ export function Layout() {
               aria-label={label}
               className={({ isActive }) =>
                 `flex-1 flex flex-col items-center gap-1 py-2 text-xs transition-colors ${
-                  isActive ? 'text-blue-400' : 'text-slate-500'
+                  isActive ? 'text-blue-400' : 'text-muted'
                 }`
               }
             >

@@ -18,14 +18,14 @@ const col = createColumnHelper<Product>()
 const columns = [
   col.accessor('sku', {
     header: 'SKU',
-    cell: i => <span className="font-mono text-slate-400 text-xs">{i.getValue()}</span>,
+    cell: i => <span className="font-mono text-muted text-xs">{i.getValue()}</span>,
   }),
   col.accessor('name', { header: 'Product Name' }),
   col.accessor('category', { header: 'Category' }),
   col.accessor('supplierName', { header: 'Supplier' }),
   col.accessor('stockLevel', {
     header: 'Stock',
-    cell: i => <span className="text-white">{i.getValue().toLocaleString()}</span>,
+    cell: i => <span className="text-primary">{i.getValue().toLocaleString()}</span>,
   }),
   col.accessor('status', {
     header: 'Status',
@@ -65,7 +65,6 @@ export function Products() {
 
   const categories: (ProductCategory | 'All')[] = ['All', 'Electronics', 'Apparel', 'Machinery', 'Pharma', 'Food & Bev', 'Chemicals']
   const statuses: (StockStatus | 'All')[] = ['All', 'In Stock', 'Low Stock', 'Out of Stock']
-
   const recentStock = stockTrend.slice(-24)
 
   return (
@@ -92,10 +91,10 @@ export function Products() {
           <ChartCard title="Products by Category">
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={productsByCategory} barSize={28}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2E3347" vertical={false} />
-                <XAxis dataKey="category" tick={{ fill: '#8B91A8', fontSize: 10 }} tickLine={false} axisLine={{ stroke: '#2E3347' }} />
-                <YAxis tick={{ fill: '#8B91A8', fontSize: 10 }} tickLine={false} axisLine={false} width={24} />
-                <Tooltip contentStyle={{ background: '#1A1D27', border: '1px solid #2E3347', borderRadius: 8, color: '#F0F2F8' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="category" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={{ stroke: 'var(--border)' }} />
+                <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={24} />
+                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
                 <Bar dataKey="count" fill="#3B6FFF" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -104,10 +103,10 @@ export function Products() {
           <ChartCard title="Stock Level Trend" subtitle="2024–2025">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={recentStock}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2E3347" vertical={false} />
-                <XAxis dataKey="month" tickFormatter={(v: string) => v.split(' ')[0]} tick={{ fill: '#8B91A8', fontSize: 10 }} tickLine={false} axisLine={false} interval={3} />
-                <YAxis tick={{ fill: '#8B91A8', fontSize: 10 }} tickLine={false} axisLine={false} width={32} />
-                <Tooltip contentStyle={{ background: '#1A1D27', border: '1px solid #2E3347', borderRadius: 8, color: '#F0F2F8' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="month" tickFormatter={(v: string) => v.split(' ')[0]} tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} interval={3} />
+                <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={32} />
+                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
                 <Line type="monotone" dataKey="stock" stroke="#3B6FFF" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
@@ -116,50 +115,37 @@ export function Products() {
 
         {/* Filters */}
         <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search products..."
-            aria-label="Search products by name or SKU"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-44"
-          />
+          <input type="text" placeholder="Search products..." aria-label="Search products by name or SKU" value={search} onChange={e => setSearch(e.target.value)}
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-44" />
           <select aria-label="Filter by category" value={productCategory} onChange={e => setProductCategory(e.target.value as ProductCategory | 'All')}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto">
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
             {categories.map(c => <option key={c} value={c}>Category: {c}</option>)}
           </select>
           <select aria-label="Filter by stock status" value={productStatus} onChange={e => setProductStatus(e.target.value as StockStatus | 'All')}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto">
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
             {statuses.map(s => <option key={s} value={s}>Status: {s}</option>)}
           </select>
-          <input
-            type="text"
-            placeholder="Supplier..."
-            aria-label="Filter by supplier name"
-            value={productSupplier}
-            onChange={e => setProductSupplier(e.target.value)}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-36"
-          />
-          <span role="status" aria-live="polite" className="text-xs text-slate-500 md:ml-auto">{filtered.length} products</span>
+          <input type="text" placeholder="Supplier..." aria-label="Filter by supplier name" value={productSupplier} onChange={e => setProductSupplier(e.target.value)}
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-36" />
+          <span role="status" aria-live="polite" className="text-xs text-muted md:ml-auto">{filtered.length} products</span>
         </div>
 
         {/* Table */}
-        <div style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl overflow-hidden">
+        <div className="border border-border rounded-xl overflow-hidden bg-bg-surface">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="Products">
               <thead>
-                <tr className="border-b border-[#2E3347]">
+                <tr className="border-b border-border">
                   {table.getFlatHeaders().map(header => (
-                    <th key={header.id}
-                      scope="col"
+                    <th key={header.id} scope="col"
                       aria-sort={header.column.getIsSorted() === 'asc' ? 'ascending' : header.column.getIsSorted() === 'desc' ? 'descending' : header.column.getCanSort() ? 'none' : undefined}
-                      className="text-left px-4 py-3 text-slate-500 font-medium text-xs cursor-pointer hover:text-slate-300"
+                      className="text-left px-4 py-3 text-muted font-medium text-xs cursor-pointer hover:text-primary"
                       onClick={header.column.getToggleSortingHandler()}>
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
                         {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
-                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600" aria-hidden="true">↕</span>}
+                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-muted" aria-hidden="true">↕</span>}
                       </div>
                     </th>
                   ))}
@@ -169,9 +155,9 @@ export function Products() {
                 {table.getRowModel().rows.length === 0 ? (
                   <tr><td colSpan={columns.length}><EmptyState /></td></tr>
                 ) : table.getRowModel().rows.map(row => (
-                  <tr key={row.id} className="border-b border-[#1E2130] hover:bg-white/[0.02]">
+                  <tr key={row.id} className="border-b border-border hover:bg-white/[0.02]">
                     {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className="px-4 py-3 text-white">
+                      <td key={cell.id} className="px-4 py-3 text-primary">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -180,7 +166,7 @@ export function Products() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#2E3347] text-xs text-slate-400">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border text-xs text-muted">
             <span role="status" aria-live="polite">Showing {Math.min(table.getState().pagination.pageIndex * 10 + 1, filtered.length)}–{Math.min((table.getState().pagination.pageIndex + 1) * 10, filtered.length)} of {filtered.length}</span>
             <div className="flex items-center gap-1">
               <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label="Previous page" className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
@@ -192,20 +178,16 @@ export function Products() {
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
           {filtered.slice(0, 10).map(p => (
-            <div key={p.id} style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl p-4">
+            <div key={p.id} className="border border-border rounded-xl p-4 bg-bg-surface">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-sm font-medium text-white">{p.name}</p>
-                  <p className="text-xs text-slate-500">{p.sku} · {p.supplierName}</p>
+                  <p className="text-sm font-medium text-primary">{p.name}</p>
+                  <p className="text-xs text-muted">{p.sku} · {p.supplierName}</p>
                 </div>
                 <StatusBadge value={p.status} />
               </div>
-              <div className="flex items-center gap-3 text-xs text-slate-400">
-                <span>{p.category}</span>
-                <span>·</span>
-                <span>{p.stockLevel.toLocaleString()} units</span>
-                <span>·</span>
-                <span>${p.unitCost.toFixed(0)}</span>
+              <div className="flex items-center gap-3 text-xs text-muted">
+                <span>{p.category}</span><span>·</span><span>{p.stockLevel.toLocaleString()} units</span><span>·</span><span>${p.unitCost.toFixed(0)}</span>
               </div>
             </div>
           ))}

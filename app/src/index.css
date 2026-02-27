@@ -1,20 +1,33 @@
 @import "tailwindcss";
 
-/* ─── Theme variables ────────────────────────────────────────────────────── */
+/* ─── Design system tokens ───────────────────────────────────────────────── */
+/*  Registered as Tailwind theme tokens so utilities like bg-surface,        */
+/*  text-primary, border-border etc. work without !important overrides.      */
+
+@theme {
+  --color-bg-base:    var(--bg-base);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-sidebar: var(--bg-sidebar);
+  --color-border:     var(--border);
+  --color-primary:    var(--text-primary);
+  --color-muted:      var(--text-muted);
+}
+
+/* ─── CSS variable values (swapped by data-theme) ────────────────────────── */
 :root {
-  --bg-base:    #0F1117;
-  --bg-surface: #1A1D27;
-  --bg-sidebar: #13151F;
-  --border:     #2E3347;
+  --bg-base:      #0F1117;
+  --bg-surface:   #1A1D27;
+  --bg-sidebar:   #13151F;
+  --border:       #2E3347;
   --text-primary: #F0F2F8;
   --text-muted:   #8B91A8;
 }
 
 [data-theme="light"] {
-  --bg-base:    #F4F6FB;
-  --bg-surface: #FFFFFF;
-  --bg-sidebar: #E8ECF4;
-  --border:     #D1D8E8;
+  --bg-base:      #F4F6FB;
+  --bg-surface:   #FFFFFF;
+  --bg-sidebar:   #E8ECF4;
+  --border:       #D1D8E8;
   --text-primary: #111827;
   --text-muted:   #6B7280;
 }
@@ -40,22 +53,6 @@ body {
   display: none;
 }
 
-/* ─── Surface token utilities ─────────────────────────────────────────────── */
-.surface {
-  background-color: var(--bg-surface);
-  border-color: var(--border);
-}
-.sidebar {
-  background-color: var(--bg-sidebar);
-  border-color: var(--border);
-}
-
-/* Make all borders in the app respect the theme border token */
-[class~="border"],
-[class*=" border-"] {
-  border-color: var(--border);
-}
-
 /* Filter inputs pick up the surface background */
 input[type="text"],
 input[type="date"],
@@ -65,15 +62,3 @@ select {
   border-color: var(--border);
   transition: background-color 0.2s, border-color 0.2s;
 }
-
-/* ─── Light mode text overrides ──────────────────────────────────────────── */
-/* Remap hardcoded white/slate Tailwind classes when light theme is active   */
-[data-theme="light"] .text-white { color: var(--text-primary) !important; }
-/* Keep text white on coloured (blue) backgrounds */
-[data-theme="light"] .bg-blue-500,
-[data-theme="light"] .bg-blue-600 { color: #ffffff !important; }
-[data-theme="light"] .text-slate-300 { color: #374151 !important; }
-[data-theme="light"] .text-slate-400 { color: #4B5563 !important; }
-[data-theme="light"] .text-slate-500 { color: #6B7280 !important; }
-[data-theme="light"] .text-slate-600 { color: #4B5563 !important; }
-[data-theme="light"] .placeholder-slate-500::placeholder { color: #9CA3AF; }

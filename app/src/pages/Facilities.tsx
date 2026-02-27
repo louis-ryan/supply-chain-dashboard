@@ -26,7 +26,7 @@ const col = createColumnHelper<Facility>()
 const columns = [
   col.accessor('id', {
     header: 'ID',
-    cell: i => <span className="font-mono text-slate-400 text-xs">{i.getValue()}</span>,
+    cell: i => <span className="font-mono text-muted text-xs">{i.getValue()}</span>,
   }),
   col.accessor('name', { header: 'Facility Name' }),
   col.accessor('region', { header: 'Region' }),
@@ -46,7 +46,7 @@ const columns = [
           <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div className={`h-full ${colour} rounded-full`} style={{ width: `${v}%` }} />
           </div>
-          <span className="text-xs text-slate-400">{v}%</span>
+          <span className="text-xs text-muted">{v}%</span>
         </div>
       )
     },
@@ -108,10 +108,10 @@ export function Facilities() {
           <ChartCard title="Facilities by Region" subtitle="All time">
             <ResponsiveContainer width="100%" height={180}>
               <BarChart data={facilitiesByRegion} barSize={28}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2E3347" vertical={false} />
-                <XAxis dataKey="region" tick={{ fill: '#8B91A8', fontSize: 11 }} tickLine={false} axisLine={{ stroke: '#2E3347' }} />
-                <YAxis tick={{ fill: '#8B91A8', fontSize: 10 }} tickLine={false} axisLine={false} width={24} />
-                <Tooltip contentStyle={{ background: '#1A1D27', border: '1px solid #2E3347', borderRadius: 8, color: '#F0F2F8' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="region" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} tickLine={false} axisLine={{ stroke: 'var(--border)' }} />
+                <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={24} />
+                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
                 <Bar dataKey="count" fill="#3B6FFF" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -130,8 +130,8 @@ export function Facilities() {
                 {facilitiesByType.map((t, i) => (
                   <div key={t.type} className="flex items-center gap-2 text-xs">
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: DONUT_COLORS[i] }} />
-                    <span className="text-slate-400 truncate">{t.type}</span>
-                    <span className="text-white font-medium ml-auto">{t.count}</span>
+                    <span className="text-muted truncate">{t.type}</span>
+                    <span className="text-primary font-medium ml-auto">{t.count}</span>
                   </div>
                 ))}
               </div>
@@ -147,54 +147,42 @@ export function Facilities() {
             aria-label="Search facilities by name or country"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-48"
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-48"
           />
-          <select
-            aria-label="Filter by region"
-            value={facilityRegion}
-            onChange={e => setFacilityRegion(e.target.value as Region | 'All')}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
-          >
+          <select aria-label="Filter by region" value={facilityRegion} onChange={e => setFacilityRegion(e.target.value as Region | 'All')}
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
             {regions.map(r => <option key={r} value={r}>Region: {r}</option>)}
           </select>
-          <select
-            aria-label="Filter by type"
-            value={facilityType}
-            onChange={e => setFacilityType(e.target.value as FacilityType | 'All')}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
-          >
+          <select aria-label="Filter by type" value={facilityType} onChange={e => setFacilityType(e.target.value as FacilityType | 'All')}
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
             {types.map(t => <option key={t} value={t}>Type: {t}</option>)}
           </select>
-          <select
-            aria-label="Filter by status"
-            value={facilityStatus}
-            onChange={e => setFacilityStatus(e.target.value as FacilityStatus | 'All')}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto"
-          >
+          <select aria-label="Filter by status" value={facilityStatus} onChange={e => setFacilityStatus(e.target.value as FacilityStatus | 'All')}
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
             {statuses.map(s => <option key={s} value={s}>Status: {s}</option>)}
           </select>
-          <span role="status" aria-live="polite" className="text-xs text-slate-500 md:ml-auto">{filtered.length} facilities</span>
+          <span role="status" aria-live="polite" className="text-xs text-muted md:ml-auto">{filtered.length} facilities</span>
         </div>
 
         {/* Table */}
-        <div style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl overflow-hidden">
+        <div className="border border-border rounded-xl overflow-hidden bg-bg-surface">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="Facilities">
               <thead>
-                <tr className="border-b border-[#2E3347]">
+                <tr className="border-b border-border">
                   {table.getFlatHeaders().map(header => (
                     <th
                       key={header.id}
                       scope="col"
                       aria-sort={header.column.getIsSorted() === 'asc' ? 'ascending' : header.column.getIsSorted() === 'desc' ? 'descending' : header.column.getCanSort() ? 'none' : undefined}
-                      className="text-left px-4 py-3 text-slate-500 font-medium text-xs cursor-pointer select-none hover:text-slate-300"
+                      className="text-left px-4 py-3 text-muted font-medium text-xs cursor-pointer select-none hover:text-primary"
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
                         {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
-                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600" aria-hidden="true">↕</span>}
+                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-muted" aria-hidden="true">↕</span>}
                       </div>
                     </th>
                   ))}
@@ -205,9 +193,9 @@ export function Facilities() {
                   <tr><td colSpan={columns.length}><EmptyState /></td></tr>
                 ) : (
                   table.getRowModel().rows.map(row => (
-                    <tr key={row.id} className="border-b border-[#1E2130] hover:bg-white/[0.02]">
+                    <tr key={row.id} className="border-b border-border hover:bg-white/[0.02]">
                       {row.getVisibleCells().map(cell => (
-                        <td key={cell.id} className="px-4 py-3 text-white">
+                        <td key={cell.id} className="px-4 py-3 text-primary">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
@@ -218,19 +206,15 @@ export function Facilities() {
             </table>
           </div>
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#2E3347] text-xs text-slate-400">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border text-xs text-muted">
             <span role="status" aria-live="polite">
               Showing {table.getState().pagination.pageIndex * 10 + 1}–{Math.min((table.getState().pagination.pageIndex + 1) * 10, filtered.length)} of {filtered.length}
             </span>
             <div className="flex items-center gap-1">
               <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label="Previous page" className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
               {Array.from({ length: table.getPageCount() }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => table.setPageIndex(i)}
-                  className={`px-2 py-1 rounded ${table.getState().pagination.pageIndex === i ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 hover:bg-white/10'}`}
-                >
+                <button key={i} onClick={() => table.setPageIndex(i)}
+                  className={`px-2 py-1 rounded ${table.getState().pagination.pageIndex === i ? 'bg-blue-500/20 text-blue-400' : 'bg-white/5 hover:bg-white/10'}`}>
                   {i + 1}
                 </button>
               ))}
@@ -242,20 +226,16 @@ export function Facilities() {
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
           {filtered.slice(0, 10).map(f => (
-            <div key={f.id} style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl p-4">
+            <div key={f.id} className="border border-border rounded-xl p-4 bg-bg-surface">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-sm font-medium text-white">{f.name}</p>
-                  <p className="text-xs text-slate-500">{f.id} · {f.country}</p>
+                  <p className="text-sm font-medium text-primary">{f.name}</p>
+                  <p className="text-xs text-muted">{f.id} · {f.country}</p>
                 </div>
                 <StatusBadge value={f.status} />
               </div>
-              <div className="flex items-center gap-3 text-xs text-slate-400">
-                <span>{f.type}</span>
-                <span>·</span>
-                <span>{f.region}</span>
-                <span>·</span>
-                <span>{f.utilisation}% util.</span>
+              <div className="flex items-center gap-3 text-xs text-muted">
+                <span>{f.type}</span><span>·</span><span>{f.region}</span><span>·</span><span>{f.utilisation}% util.</span>
               </div>
             </div>
           ))}

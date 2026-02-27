@@ -8,8 +8,8 @@ export function PageHeader({ title, subtitle, actions }: Props) {
   return (
     <div className="flex items-start justify-between px-6 pt-6 pb-4">
       <div>
-        <h1 className="text-xl font-semibold text-white">{title}</h1>
-        {subtitle && <p className="text-sm text-slate-400 mt-0.5">{subtitle}</p>}
+        <h1 className="text-xl font-semibold text-primary">{title}</h1>
+        {subtitle && <p className="text-sm text-muted mt-0.5">{subtitle}</p>}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>

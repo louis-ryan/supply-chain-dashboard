@@ -36,7 +36,7 @@ const columns = [
       const colour = row.complianceYoY >= 0 ? 'text-green-400' : 'text-red-400'
       return (
         <div className="flex items-center gap-2">
-          <span className="text-white">{v}%</span>
+          <span className="text-primary">{v}%</span>
           <span className={`text-xs ${colour}`}>
             {row.complianceYoY >= 0 ? '↑' : '↓'} {Math.abs(row.complianceYoY)}%
           </span>
@@ -52,7 +52,7 @@ const columns = [
       const colour = row.onTimeYoY >= 0 ? 'text-green-400' : 'text-red-400'
       return (
         <div className="flex items-center gap-2">
-          <span className="text-white">{v}%</span>
+          <span className="text-primary">{v}%</span>
           <span className={`text-xs ${colour}`}>
             {row.onTimeYoY >= 0 ? '↑' : '↓'} {Math.abs(row.onTimeYoY)}%
           </span>
@@ -91,8 +91,6 @@ export function Suppliers() {
 
   const tiers: (SupplierTier | 'All')[] = ['All', 'Tier 1', 'Tier 2', 'Tier 3']
   const risks: (RiskLevel | 'All')[] = ['All', 'Low', 'Medium', 'High']
-
-  // Show last 24 months of compliance
   const recentCompliance = complianceOverTime.slice(-24)
 
   return (
@@ -120,10 +118,10 @@ export function Suppliers() {
           <ChartCard title="Compliance Score Over Time" subtitle="2024–2025" className="lg:col-span-2">
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={recentCompliance}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2E3347" vertical={false} />
-                <XAxis dataKey="month" tickFormatter={(v: string) => v.split(' ')[0]} tick={{ fill: '#8B91A8', fontSize: 10 }} tickLine={false} axisLine={false} interval={3} />
-                <YAxis tick={{ fill: '#8B91A8', fontSize: 10 }} tickLine={false} axisLine={false} domain={[60, 100]} width={28} />
-                <Tooltip contentStyle={{ background: '#1A1D27', border: '1px solid #2E3347', borderRadius: 8, color: '#F0F2F8' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="month" tickFormatter={(v: string) => v.split(' ')[0]} tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} interval={3} />
+                <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} domain={[60, 100]} width={28} />
+                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
                 <Line type="monotone" dataKey="score" stroke="#22C55E" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
@@ -142,8 +140,8 @@ export function Suppliers() {
                 {supplierTiers.map((t, i) => (
                   <div key={t.name} className="flex items-center gap-2 text-xs">
                     <span className="w-2 h-2 rounded-full" style={{ background: DONUT_COLORS[i] }} />
-                    <span className="text-slate-400">{t.name}</span>
-                    <span className="text-white font-medium ml-auto">{t.value}</span>
+                    <span className="text-muted">{t.name}</span>
+                    <span className="text-primary font-medium ml-auto">{t.value}</span>
                   </div>
                 ))}
               </div>
@@ -153,50 +151,37 @@ export function Suppliers() {
 
         {/* Filters */}
         <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search suppliers..."
-            aria-label="Search suppliers by name"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-44"
-          />
+          <input type="text" placeholder="Search suppliers..." aria-label="Search suppliers by name" value={search} onChange={e => setSearch(e.target.value)}
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-44" />
           <select aria-label="Filter by tier" value={supplierTier} onChange={e => setSupplierTier(e.target.value as SupplierTier | 'All')}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto">
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
             {tiers.map(t => <option key={t} value={t}>Tier: {t}</option>)}
           </select>
           <select aria-label="Filter by risk level" value={supplierRisk} onChange={e => setSupplierRisk(e.target.value as RiskLevel | 'All')}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-slate-300 outline-none focus:border-blue-500/50 w-full md:w-auto">
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
             {risks.map(r => <option key={r} value={r}>Risk: {r}</option>)}
           </select>
-          <input
-            type="text"
-            placeholder="Country..."
-            aria-label="Filter by country"
-            value={supplierCountry}
-            onChange={e => setSupplierCountry(e.target.value)}
-            className="bg-transparent border rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-blue-500/50 w-full md:w-32"
-          />
-          <span role="status" aria-live="polite" className="text-xs text-slate-500 md:ml-auto">{filtered.length} suppliers</span>
+          <input type="text" placeholder="Country..." aria-label="Filter by country" value={supplierCountry} onChange={e => setSupplierCountry(e.target.value)}
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-32" />
+          <span role="status" aria-live="polite" className="text-xs text-muted md:ml-auto">{filtered.length} suppliers</span>
         </div>
 
         {/* Table */}
-        <div style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl overflow-hidden">
+        <div className="border border-border rounded-xl overflow-hidden bg-bg-surface">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" aria-label="Suppliers">
               <thead>
-                <tr className="border-b border-[#2E3347]">
+                <tr className="border-b border-border">
                   {table.getFlatHeaders().map(header => (
-                    <th key={header.id}
-                      scope="col"
+                    <th key={header.id} scope="col"
                       aria-sort={header.column.getIsSorted() === 'asc' ? 'ascending' : header.column.getIsSorted() === 'desc' ? 'descending' : header.column.getCanSort() ? 'none' : undefined}
-                      className="text-left px-4 py-3 text-slate-500 font-medium text-xs cursor-pointer hover:text-slate-300"
+                      className="text-left px-4 py-3 text-muted font-medium text-xs cursor-pointer hover:text-primary"
                       onClick={header.column.getToggleSortingHandler()}>
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
                         {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
-                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-slate-600" aria-hidden="true">↕</span>}
+                        {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-muted" aria-hidden="true">↕</span>}
                       </div>
                     </th>
                   ))}
@@ -206,9 +191,9 @@ export function Suppliers() {
                 {table.getRowModel().rows.length === 0 ? (
                   <tr><td colSpan={columns.length}><EmptyState /></td></tr>
                 ) : table.getRowModel().rows.map(row => (
-                  <tr key={row.id} className="border-b border-[#1E2130] hover:bg-white/[0.02]">
+                  <tr key={row.id} className="border-b border-border hover:bg-white/[0.02]">
                     {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className="px-4 py-3 text-white">
+                      <td key={cell.id} className="px-4 py-3 text-primary">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -217,7 +202,7 @@ export function Suppliers() {
               </tbody>
             </table>
           </div>
-          <div className="flex items-center justify-between px-4 py-3 border-t border-[#2E3347] text-xs text-slate-400">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border text-xs text-muted">
             <span role="status" aria-live="polite">Showing {Math.min(table.getState().pagination.pageIndex * 10 + 1, filtered.length)}–{Math.min((table.getState().pagination.pageIndex + 1) * 10, filtered.length)} of {filtered.length}</span>
             <div className="flex items-center gap-1">
               <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} aria-label="Previous page" className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30">←</button>
@@ -229,11 +214,11 @@ export function Suppliers() {
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
           {filtered.slice(0, 10).map(s => (
-            <div key={s.id} style={{ background: "var(--bg-surface)", borderColor: "var(--border)" }} className="border rounded-xl p-4">
+            <div key={s.id} className="border border-border rounded-xl p-4 bg-bg-surface">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <p className="text-sm font-medium text-white">{s.name}</p>
-                  <p className="text-xs text-slate-500">{s.country}</p>
+                  <p className="text-sm font-medium text-primary">{s.name}</p>
+                  <p className="text-xs text-muted">{s.country}</p>
                 </div>
                 <div className="flex gap-1.5">
                   <StatusBadge value={s.tier} />
@@ -241,7 +226,7 @@ export function Suppliers() {
                 </div>
               </div>
               <div className="flex items-center gap-4 text-xs">
-                <span className="text-slate-400">Compliance: <span className="text-white">{s.complianceScore}%</span></span>
+                <span className="text-muted">Compliance: <span className="text-primary">{s.complianceScore}%</span></span>
                 <span className={s.complianceYoY >= 0 ? 'text-green-400' : 'text-red-400'}>
                   {s.complianceYoY >= 0 ? '↑' : '↓'} {Math.abs(s.complianceYoY)}%
                 </span>
