@@ -47,3 +47,13 @@ documentation section of the submission.
 **19:52** — Increased horizontal padding on FilterChip and added `whitespace-nowrap` so labels like "In Transit" and "Cancelled" never line-wrap inside the chip.
 
 **19:55** — Applied the mobile filter stacking pattern to the remaining Shipments filter controls (date range pickers, search input, result count). On mobile each sits on its own full-width row; the date inputs stretch to fill the row side-by-side. Desktop layout unchanged.
+
+**20:15** — Git Init and pushed to Github.
+
+**20:30** — Added unit tests for filter logic using Vitest. Installed Vitest, configured it with a `node` environment to avoid a CJS/ESM conflict in jsdom, and wrote 33 tests across four describe blocks covering Facilities, Suppliers, Products, and Shipments. Tests cover the default (all-results) case, each individual filter dimension, combined filters, and the empty-result edge case. All 33 pass. Test command: `npm test`.
+
+**20:41** — Wired up the Export buttons on all four data pages. Built a `exportCsv` utility in `src/utils/exportCsv.ts` that serialises an array of objects to a properly escaped CSV string and triggers a browser download. Each page's Export button now exports the current filtered view — so if you've filtered to APAC facilities, you get only those rows in the CSV.
+
+**20:57** — Added ARIA labels and accessibility attributes across the app. Tables now have `aria-label` and `scope="col"` on headers with `aria-sort` wired to the sort state. Sort indicator arrows are marked `aria-hidden`. Filter inputs and selects have `aria-label` values. Result counts and pagination spans have `role="status" aria-live="polite"` so screen readers announce changes. Both navs have `aria-label` landmarks. KPI cards have `role="region"`.
+
+**21:15** — Implemented a light/dark mode toggle on desktop. Added CSS custom properties for the five key colour tokens (`--bg-base`, `--bg-surface`, `--bg-sidebar`, `--border`, `--text-primary`) with a `[data-theme="light"]` override block. The `toggleTheme` action in the Zustand store flips the `data-theme` attribute on `<html>`. A `ThemeToggle` button (☀/🌙) sits in the sidebar footer on desktop. Build is clean, all tests still pass.
