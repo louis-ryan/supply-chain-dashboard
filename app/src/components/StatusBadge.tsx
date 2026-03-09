@@ -14,11 +14,11 @@ function resolveVariant(value: string): Props['variant'] {
 
 const variantClasses: Record<NonNullable<Props['variant']>, string> = {
   auto: '',
-  green: 'bg-green-500/15 text-green-400 border-green-500/30',
-  amber: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-  red: 'bg-red-500/15 text-red-400 border-red-500/30',
-  blue: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-  grey: 'bg-white/10 text-slate-400 border-white/15',
+  green: 'bg-success/15 text-success border-success/30',
+  amber: 'bg-warning/15 text-warning border-warning/30',
+  red:   'bg-danger/15 text-danger border-danger/30',
+  blue:  'bg-accent/15 text-accent border-accent/30',
+  grey:  'bg-secondary/10 text-muted border-secondary/15',
 }
 
 export function StatusBadge({ value, variant = 'auto' }: Props) {

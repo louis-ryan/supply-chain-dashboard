@@ -52,19 +52,27 @@ npm run build
 
 ## Mobile-First Approach
 
-The mobile strategy was decided at the design stage before any code was written, with desktop and mobile layouts produced in Pencil side by side. The key decisions were:
+The mobile strategy was locked at the design stage — desktop and mobile layouts were produced in Pencil side by side before any React code was written. The goal was to answer a specific question first: *who is using this on a phone, and what do they actually need?* A logistics manager checking on delayed shipments from a warehouse floor has different needs from an analyst building a weekly report at a desk. Mobile design was treated as a constraint that forces prioritisation, not an afterthought that requires downsizing.
 
-**Navigation:** A bottom tab bar replaces the sidebar on mobile (`md:hidden` / `hidden md:flex`). Tab labels are kept short and icons are used at all sizes. On desktop the sidebar expands at `lg:` to show full labels; at `md:` it collapses to icon-only width.
+**Navigation: bottom tab bar, not hamburger**
 
-**Tables → Cards:** Full data tables are hidden on mobile (`hidden md:block` on the table wrapper). Each page has a parallel mobile card layout that surfaces only the 2–3 most decision-relevant fields per row — for example, a Shipment card shows route, carrier, date and status but omits value and expected arrival. This avoids horizontal scroll entirely.
+A hamburger menu was ruled out early. On a dashboard with five sections, a hamburger requires two taps to navigate — one to open the menu, one to select. A bottom tab bar gives one-tap access to every section and keeps the current location visible at all times. The tabs use short labels and icons so they're legible at small sizes without truncation. On desktop the sidebar expands to show full labels; the navigation component is the same, just conditionally styled.
 
-**Charts:** All charts use `ResponsiveContainer width="100%"` so they fill the viewport on any screen width. On mobile they stack vertically in a single column (`grid-cols-1`); on desktop they sit in 2- or 3-column grids.
+**Tables → cards: curated fields, not compressed columns**
 
-**Filters:** On desktop, filters sit inline above the table. On mobile the same controls are accessible in a row that wraps naturally. Date range pickers on Shipments are placed in the page header so they don't push content on small screens.
+Horizontal scroll tables on mobile are a failure mode — users miss columns, column widths fight for space, and the interaction model (scroll right to see more data) is invisible. The decision was to replace tables with cards that surface only the 3–4 most decision-relevant fields per entity. A Shipment card shows route, carrier, departure date and status — enough to identify the shipment and understand its state. Value and expected arrival are omitted because they're not the first question a field user asks. The full table is one breakpoint away on desktop. Cards initially showed only the first 10 results with no affordance for more; this was corrected to include a "Show all N" toggle that expands the full filtered set.
 
-**KPI cards:** Use a `grid-cols-2` layout on mobile (2 columns) and `lg:grid-cols-4` on desktop, matching the Pencil design.
+**Content hierarchy on Shipments**
 
-The biggest challenge was Shipments: the volume chart was above the status cards in early mobile explorations, which buried the list under a chart a field user wouldn't need immediately. The chart was moved to the top row alongside the on-time KPI card so both are visible together, with the status chips and table below.
+The hardest mobile layout was Shipments. The first exploration put the volume chart above the status filter chips and card list, which buried the actionable content under a chart a field user checking on delayed shipments wouldn't need. The chart was moved alongside the on-time KPI so both context metrics are visible together at the top, with the status chips and list immediately below. The hierarchy now matches the user's likely question order: *how are we tracking overall → what's the current breakdown → find the specific shipment*.
+
+**Filters: inline, wrapping**
+
+Filters sit inline above the table on both breakpoints, wrapping to new rows on mobile rather than opening a separate drawer. A drawer would be the right call if filters were complex (10+ options, range sliders, nested conditions) but for 2–3 dropdowns and a search input the overhead of a separate interaction layer isn't justified. The Shipments date range pickers stretch to fill the row on mobile so they're easy to tap without being cramped.
+
+**Known limitations**
+
+The mobile card layout is a second rendering of the same data — any column additions to the desktop table need a parallel update to the card template. This is manageable at the current entity count but would be worth abstracting into a shared card component if the number of entity types grew.
 
 ---
 

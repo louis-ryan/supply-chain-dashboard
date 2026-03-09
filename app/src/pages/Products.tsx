@@ -42,6 +42,7 @@ export function Products() {
   const { productCategory, productStatus, productSupplier, setProductCategory, setProductStatus, setProductSupplier } = useStore()
   const [sorting, setSorting] = useState<SortingState>([])
   const [search, setSearch] = useState('')
+  const [showAllCards, setShowAllCards] = useState(false)
 
   const filtered = useMemo(() =>
     products.filter(p =>
@@ -78,7 +79,7 @@ export function Products() {
               SKU: p.sku, Name: p.name, Category: p.category, Supplier: p.supplierName,
               Stock: p.stockLevel, Status: p.status, 'Unit Cost': p.unitCost, 'Lead Time (days)': p.leadTimeDays,
             })), 'products')}
-            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+            className="text-xs bg-accent hover:bg-accent/80 text-white px-3 py-1.5 rounded-lg transition-colors"
           >
             Export
           </button>
@@ -95,7 +96,7 @@ export function Products() {
                 <XAxis dataKey="category" tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={{ stroke: 'var(--border)' }} />
                 <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={24} />
                 <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
-                <Bar dataKey="count" fill="#3B6FFF" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="count" fill="var(--accent)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -107,7 +108,7 @@ export function Products() {
                 <XAxis dataKey="month" tickFormatter={(v: string) => v.split(' ')[0]} tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} interval={3} />
                 <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={32} />
                 <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
-                <Line type="monotone" dataKey="stock" stroke="#3B6FFF" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="stock" stroke="var(--accent)" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -116,17 +117,17 @@ export function Products() {
         {/* Filters */}
         <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-3">
           <input type="text" placeholder="Search products..." aria-label="Search products by name or SKU" value={search} onChange={e => setSearch(e.target.value)}
-            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-44" />
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-accent/50 w-full md:w-44" />
           <select aria-label="Filter by category" value={productCategory} onChange={e => setProductCategory(e.target.value as ProductCategory | 'All')}
-            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-accent/50 w-full md:w-auto">
             {categories.map(c => <option key={c} value={c}>Category: {c}</option>)}
           </select>
           <select aria-label="Filter by stock status" value={productStatus} onChange={e => setProductStatus(e.target.value as StockStatus | 'All')}
-            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-accent/50 w-full md:w-auto">
             {statuses.map(s => <option key={s} value={s}>Status: {s}</option>)}
           </select>
           <input type="text" placeholder="Supplier..." aria-label="Filter by supplier name" value={productSupplier} onChange={e => setProductSupplier(e.target.value)}
-            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-36" />
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-accent/50 w-full md:w-36" />
           <span role="status" aria-live="polite" className="text-xs text-muted md:ml-auto">{filtered.length} products</span>
         </div>
 
@@ -143,8 +144,8 @@ export function Products() {
                       onClick={header.column.getToggleSortingHandler()}>
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
-                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
+                        {header.column.getIsSorted() === 'asc' && <span className="text-accent" aria-hidden="true">↑</span>}
+                        {header.column.getIsSorted() === 'desc' && <span className="text-accent" aria-hidden="true">↓</span>}
                         {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-muted" aria-hidden="true">↕</span>}
                       </div>
                     </th>
@@ -177,7 +178,7 @@ export function Products() {
 
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
-          {filtered.slice(0, 10).map(p => (
+          {(showAllCards ? filtered : filtered.slice(0, 10)).map(p => (
             <div key={p.id} className="border border-border rounded-xl p-4 bg-bg-surface">
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -191,6 +192,11 @@ export function Products() {
               </div>
             </div>
           ))}
+          {filtered.length > 10 && (
+            <button onClick={() => setShowAllCards(v => !v)} className="w-full py-2 text-xs text-accent hover:text-accent/80 transition-colors">
+              {showAllCards ? 'Show less' : `Show all ${filtered.length} products`}
+            </button>
+          )}
         </div>
       </div>
     </div>

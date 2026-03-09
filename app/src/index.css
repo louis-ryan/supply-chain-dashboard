@@ -10,26 +10,37 @@
   --color-bg-sidebar: var(--bg-sidebar);
   --color-border:     var(--border);
   --color-primary:    var(--text-primary);
+  --color-secondary:  var(--text-secondary);
   --color-muted:      var(--text-muted);
+  --color-accent:     var(--accent);
+  --color-success:    var(--success);
+  --color-warning:    var(--warning);
+  --color-danger:     var(--danger);
 }
 
 /* ─── CSS variable values (swapped by data-theme) ────────────────────────── */
 :root {
-  --bg-base:      #0F1117;
-  --bg-surface:   #1A1D27;
-  --bg-sidebar:   #13151F;
-  --border:       #2E3347;
-  --text-primary: #F0F2F8;
-  --text-muted:   #8B91A8;
+  --bg-base:        #0F1117;
+  --bg-surface:     #1A1D27;
+  --bg-sidebar:     #13151F;
+  --border:         #2E3347;
+  --text-primary:   #F0F2F8;
+  --text-secondary: #9BA3BF;
+  --text-muted:     #8B91A8;
+  --accent:         #4F7FFF;
+  --success:        #22C55E;
+  --warning:        #F59E0B;
+  --danger:         #EF4444;
 }
 
 [data-theme="light"] {
-  --bg-base:      #F4F6FB;
-  --bg-surface:   #FFFFFF;
-  --bg-sidebar:   #E8ECF4;
-  --border:       #D1D8E8;
-  --text-primary: #111827;
-  --text-muted:   #6B7280;
+  --bg-base:        #F4F6FB;
+  --bg-surface:     #FFFFFF;
+  --bg-sidebar:     #E8ECF4;
+  --border:         #D1D8E8;
+  --text-primary:   #111827;
+  --text-secondary: #4B5563;
+  --text-muted:     #6B7280;
 }
 
 body {

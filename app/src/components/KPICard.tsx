@@ -19,7 +19,7 @@ export function KPICard({ label, value, change, changeLabel }: Props) {
       <span className="text-sm text-muted">{label}</span>
       <span className="text-3xl font-semibold text-primary" aria-live="polite">{value}</span>
       {!isNeutral && (
-        <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+        <div className={`flex items-center gap-1 text-xs font-medium ${isPositive ? 'text-success' : 'text-danger'}`}>
           <span aria-hidden="true">{isPositive ? '↑' : '↓'}</span>
           <span>{changeLabel ?? `${Math.abs(change!)}% vs last year`}</span>
         </div>

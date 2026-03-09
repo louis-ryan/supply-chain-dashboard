@@ -1,26 +1,28 @@
 {
-  // "hooks": {
-  //   "Stop": [
-  //     {
-  //       "matcher": "",
-  //       "hooks": [
-  //         {
-  //           "type": "agent",
-  //           "prompt": "You are a process journal writer for a developer building a Supply Chain Analytics Dashboard. Your job is to write a short journal entry about what just happened in this session.\n\nInstructions:\n1. Read the file `process.md` in the working directory to understand what has already been logged.\n2. Read the file `CLAUDE.md` in the working directory to understand the project context.\n3. Based on the conversation so far in your context, identify the most recent meaningful work — what was accomplished, decided, or built?\n4. Write a 2–4 sentence journal entry in first-person, past tense, as if the developer themselves is writing it. It should sound natural and human — not like a log or a bullet list. Focus on meaningful progress or decisions, not individual file edits.\n5. If the last turn was trivial (a greeting, a clarification, nothing meaningful happened), skip writing entirely.\n6. Get the current time using the `date` command.\n7. Append the entry to `process.md` using bash: first check if today's heading exists, add it if not, then append the entry. Use the bash tool to write directly to the file — do NOT use the Edit or Write tools.\n\nFormat: `**HH:MM** — <entry text>` under `## YYYY-MM-DD` heading.\n\nTone examples:\n- \"Set up the Vite project with TypeScript and Tailwind. Got the basic shell running and confirmed hot reload was working before moving on.\"\n- \"Spent some time thinking through the mobile navigation approach. Went with a bottom tab bar on mobile rather than a hamburger menu — it felt more natural for a dashboard.\"\n- \"Finished the mock data generators. The shipments data now spans 2020 to 2026 with realistic seasonal variation, which should make the charts look more believable.\"",
-  //           "timeout": 300,
-  //           "allowedTools": ["Bash", "Write"]
-  //         }
-  //       ]
-  //     }
-  //   ]
-  // },
-  // "permissions": {
-  //   "allow": [
-  //     "Bash(echo:*)",
-  //     "Bash(date:*)",
-  //     "Bash(grep:*)",
-  //     "Bash(tee:*)",
-  //     "Write(process.md)"
-  //   ]
-  // }
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "make an? entry|write an? entry|log.{0,20}process|update process",
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "You are a process journal writer for a developer building a Supply Chain Analytics Dashboard. Your job is to write a short journal entry about what just happened in this session.\n\nInstructions:\n1. Read `process.md` in the working directory to see what has already been logged.\n2. Read `CLAUDE.md` to understand the project context.\n3. Based on the conversation in your context, identify the most recent meaningful work — what was accomplished, decided, or built?\n4. Write a 2–4 sentence journal entry in first-person, past tense, as if the developer is writing it. Sound natural and human — not like a log or bullet list. Focus on decisions and progress, not individual file edits.\n5. If the last turn was trivial (a greeting, a clarification, nothing meaningful happened), skip writing entirely.\n6. Get the current time using the `date` command.\n7. Append the entry to `process.md` using the Bash tool: check if today's heading exists, add it if not, then append the entry.\n\nFormat: `**HH:MM** — <entry text>` under a `## YYYY-MM-DD` heading.\n\nTone examples:\n- \"Set up the Vite project with TypeScript and Tailwind. Got the basic shell running and confirmed hot reload was working before moving on.\"\n- \"Spent some time thinking through the mobile navigation approach. Went with a bottom tab bar on mobile rather than a hamburger menu — it felt more natural for a dashboard.\"\n- \"Finished the mock data generators. The shipments data now spans 2020 to 2026 with realistic seasonal variation, which should make the charts look more believable.\"",
+            "timeout": 60,
+            "allowedTools": ["Bash", "Read"]
+          }
+        ]
+      },
+      {
+        "matcher": "sync.?tokens|sync.?design.?system|sync.?variables",
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "You are a design token sync agent. Your job is to read variables from `design-system.pen` and update the `:root` CSS block in `app/src/index.css` to match.\n\nSteps:\n1. Call the `mcp__pencil__get_variables` tool on `design-system.pen` to get the current token values.\n2. Read `app/src/index.css`.\n3. Update the `:root { ... }` block so every variable from `design-system.pen` is present with the correct dark-theme value. Do not touch the `[data-theme=\"light\"]` block, the `@theme` block, or anything else in the file.\n4. Only update values that have actually changed. If the file already matches, do nothing.\n5. Report what changed (or confirm no changes were needed).\n\nRules:\n- Only write to `app/src/index.css`.\n- Preserve all comments, whitespace style, and structure outside the `:root` block.\n- Do not add variables that only exist in `[data-theme=\"light\"]` and not in the design system file.",
+            "timeout": 60,
+            "allowedTools": ["mcp__pencil__get_variables", "Read", "Edit"]
+          }
+        ]
+      }
+    ]
+  }
 }

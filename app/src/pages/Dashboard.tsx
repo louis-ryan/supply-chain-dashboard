@@ -9,7 +9,7 @@ import { facilities, facilitiesByRegion } from '../data/facilities'
 import { suppliers, supplierTiers } from '../data/suppliers'
 import { shipmentVolume, recentShipments, onTimeRate } from '../data/shipments'
 
-const DONUT_COLORS = ['#3B6FFF', '#22C55E', '#F59E0B']
+const DONUT_COLORS = ['var(--accent)', 'var(--success)', 'var(--warning)']
 
 function formatValue(v: number) {
   return `$${(v / 1000).toFixed(0)}k`
@@ -56,8 +56,8 @@ export function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                 <XAxis dataKey="month" tickFormatter={(v: string) => v.split(' ')[0]} tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} interval={3} />
                 <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={28} />
-                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} itemStyle={{ color: '#3B6FFF' }} />
-                <Line type="monotone" dataKey="volume" stroke="#3B6FFF" strokeWidth={2} dot={false} />
+                <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} itemStyle={{ color: 'var(--accent)' }} />
+                <Line type="monotone" dataKey="volume" stroke="var(--accent)" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -68,7 +68,7 @@ export function Dashboard() {
                 <XAxis type="number" hide />
                 <YAxis dataKey="region" type="category" tick={{ fill: 'var(--text-muted)', fontSize: 11 }} tickLine={false} axisLine={false} width={42} />
                 <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
-                <Bar dataKey="count" fill="#3B6FFF" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="count" fill="var(--accent)" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -101,7 +101,7 @@ export function Dashboard() {
           <div className="lg:col-span-2 border border-border rounded-xl overflow-hidden bg-bg-surface">
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <h3 className="text-sm font-semibold text-primary">Recent Shipments</h3>
-              <span className="text-xs text-blue-400 cursor-pointer hover:underline">View all →</span>
+              <span className="text-xs text-accent cursor-pointer hover:underline">View all →</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">

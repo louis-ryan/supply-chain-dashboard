@@ -13,7 +13,7 @@ import { suppliers, supplierTiers, complianceOverTime } from '../data/suppliers'
 import { exportCsv } from '../utils/exportCsv'
 import type { Supplier, SupplierTier, RiskLevel } from '../types'
 
-const DONUT_COLORS = ['#3B6FFF', '#22C55E', '#F59E0B']
+const DONUT_COLORS = ['var(--accent)', 'var(--success)', 'var(--warning)']
 
 const col = createColumnHelper<Supplier>()
 
@@ -33,7 +33,7 @@ const columns = [
     cell: i => {
       const v = i.getValue()
       const row = i.row.original
-      const colour = row.complianceYoY >= 0 ? 'text-green-400' : 'text-red-400'
+      const colour = row.complianceYoY >= 0 ? 'text-success' : 'text-danger'
       return (
         <div className="flex items-center gap-2">
           <span className="text-primary">{v}%</span>
@@ -49,7 +49,7 @@ const columns = [
     cell: i => {
       const v = i.getValue()
       const row = i.row.original
-      const colour = row.onTimeYoY >= 0 ? 'text-green-400' : 'text-red-400'
+      const colour = row.onTimeYoY >= 0 ? 'text-success' : 'text-danger'
       return (
         <div className="flex items-center gap-2">
           <span className="text-primary">{v}%</span>
@@ -68,6 +68,7 @@ export function Suppliers() {
   const { supplierTier, supplierRisk, supplierCountry, setSupplierTier, setSupplierRisk, setSupplierCountry } = useStore()
   const [sorting, setSorting] = useState<SortingState>([])
   const [search, setSearch] = useState('')
+  const [showAllCards, setShowAllCards] = useState(false)
 
   const filtered = useMemo(() =>
     suppliers.filter(s =>
@@ -105,7 +106,7 @@ export function Suppliers() {
               Risk: s.riskLevel, Compliance: `${s.complianceScore}%`, 'On-Time': `${s.onTimeRate}%`,
               Contracts: s.activeContracts, Since: s.since,
             })), 'suppliers')}
-            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+            className="text-xs bg-accent hover:bg-accent/80 text-white px-3 py-1.5 rounded-lg transition-colors"
           >
             Export
           </button>
@@ -122,7 +123,7 @@ export function Suppliers() {
                 <XAxis dataKey="month" tickFormatter={(v: string) => v.split(' ')[0]} tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} interval={3} />
                 <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} domain={[60, 100]} width={28} />
                 <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
-                <Line type="monotone" dataKey="score" stroke="#22C55E" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="score" stroke="var(--success)" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -152,17 +153,17 @@ export function Suppliers() {
         {/* Filters */}
         <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-3">
           <input type="text" placeholder="Search suppliers..." aria-label="Search suppliers by name" value={search} onChange={e => setSearch(e.target.value)}
-            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-44" />
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-accent/50 w-full md:w-44" />
           <select aria-label="Filter by tier" value={supplierTier} onChange={e => setSupplierTier(e.target.value as SupplierTier | 'All')}
-            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-accent/50 w-full md:w-auto">
             {tiers.map(t => <option key={t} value={t}>Tier: {t}</option>)}
           </select>
           <select aria-label="Filter by risk level" value={supplierRisk} onChange={e => setSupplierRisk(e.target.value as RiskLevel | 'All')}
-            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-blue-500/50 w-full md:w-auto">
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary outline-none focus:border-accent/50 w-full md:w-auto">
             {risks.map(r => <option key={r} value={r}>Risk: {r}</option>)}
           </select>
           <input type="text" placeholder="Country..." aria-label="Filter by country" value={supplierCountry} onChange={e => setSupplierCountry(e.target.value)}
-            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-32" />
+            className="bg-transparent border border-border rounded-lg px-3 py-2 text-sm text-primary placeholder-muted outline-none focus:border-accent/50 w-full md:w-32" />
           <span role="status" aria-live="polite" className="text-xs text-muted md:ml-auto">{filtered.length} suppliers</span>
         </div>
 
@@ -179,8 +180,8 @@ export function Suppliers() {
                       onClick={header.column.getToggleSortingHandler()}>
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
-                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
+                        {header.column.getIsSorted() === 'asc' && <span className="text-accent" aria-hidden="true">↑</span>}
+                        {header.column.getIsSorted() === 'desc' && <span className="text-accent" aria-hidden="true">↓</span>}
                         {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-muted" aria-hidden="true">↕</span>}
                       </div>
                     </th>
@@ -213,7 +214,7 @@ export function Suppliers() {
 
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
-          {filtered.slice(0, 10).map(s => (
+          {(showAllCards ? filtered : filtered.slice(0, 10)).map(s => (
             <div key={s.id} className="border border-border rounded-xl p-4 bg-bg-surface">
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -227,12 +228,17 @@ export function Suppliers() {
               </div>
               <div className="flex items-center gap-4 text-xs">
                 <span className="text-muted">Compliance: <span className="text-primary">{s.complianceScore}%</span></span>
-                <span className={s.complianceYoY >= 0 ? 'text-green-400' : 'text-red-400'}>
+                <span className={s.complianceYoY >= 0 ? 'text-success' : 'text-danger'}>
                   {s.complianceYoY >= 0 ? '↑' : '↓'} {Math.abs(s.complianceYoY)}%
                 </span>
               </div>
             </div>
           ))}
+          {filtered.length > 10 && (
+            <button onClick={() => setShowAllCards(v => !v)} className="w-full py-2 text-xs text-accent hover:text-accent/80 transition-colors">
+              {showAllCards ? 'Show less' : `Show all ${filtered.length} suppliers`}
+            </button>
+          )}
         </div>
       </div>
     </div>

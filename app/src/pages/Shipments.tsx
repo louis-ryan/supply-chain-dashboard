@@ -43,6 +43,7 @@ export function Shipments() {
   const { shipmentStatus, shipmentDateFrom, shipmentDateTo, setShipmentStatus, setShipmentDateFrom, setShipmentDateTo } = useStore()
   const [sorting, setSorting] = useState<SortingState>([])
   const [search, setSearch] = useState('')
+  const [showAllCards, setShowAllCards] = useState(false)
 
   const filtered = useMemo(() =>
     shipments.filter(s =>
@@ -80,7 +81,7 @@ export function Shipments() {
               Status: s.status, Departure: s.departureDate, 'Expected Arrival': s.expectedArrival,
               Value: s.value,
             })), 'shipments')}
-            className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+            className="text-xs bg-accent hover:bg-accent/80 text-white px-3 py-1.5 rounded-lg transition-colors"
           >
             Export
           </button>
@@ -97,7 +98,7 @@ export function Shipments() {
                 <XAxis dataKey="month" tickFormatter={(v: string) => v.split(' ')[0]} tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} interval={3} />
                 <YAxis tick={{ fill: 'var(--text-muted)', fontSize: 10 }} tickLine={false} axisLine={false} width={28} />
                 <Tooltip contentStyle={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)' }} />
-                <Line type="monotone" dataKey="volume" stroke="#3B6FFF" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="volume" stroke="var(--accent)" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -120,7 +121,7 @@ export function Shipments() {
               className="bg-transparent border border-border rounded-lg px-2 py-1.5 text-xs text-primary outline-none flex-1 md:flex-none" />
           </div>
           <input type="text" placeholder="Search shipments..." aria-label="Search shipments by ID, origin or destination" value={search} onChange={e => setSearch(e.target.value)}
-            className="bg-transparent border border-border rounded-lg px-3 py-1.5 text-sm text-primary placeholder-muted outline-none focus:border-blue-500/50 w-full md:w-44" />
+            className="bg-transparent border border-border rounded-lg px-3 py-1.5 text-sm text-primary placeholder-muted outline-none focus:border-accent/50 w-full md:w-44" />
           <span role="status" aria-live="polite" className="text-xs text-muted md:ml-0">{filtered.length} results</span>
         </div>
 
@@ -137,8 +138,8 @@ export function Shipments() {
                       onClick={header.column.getToggleSortingHandler()}>
                       <div className="flex items-center gap-1">
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted() === 'asc' && <span className="text-blue-400" aria-hidden="true">↑</span>}
-                        {header.column.getIsSorted() === 'desc' && <span className="text-blue-400" aria-hidden="true">↓</span>}
+                        {header.column.getIsSorted() === 'asc' && <span className="text-accent" aria-hidden="true">↑</span>}
+                        {header.column.getIsSorted() === 'desc' && <span className="text-accent" aria-hidden="true">↓</span>}
                         {header.column.getCanSort() && !header.column.getIsSorted() && <span className="text-muted" aria-hidden="true">↕</span>}
                       </div>
                     </th>
@@ -171,7 +172,7 @@ export function Shipments() {
 
         {/* Mobile cards */}
         <div className="md:hidden space-y-3">
-          {filtered.slice(0, 10).map(s => (
+          {(showAllCards ? filtered : filtered.slice(0, 10)).map(s => (
             <div key={s.id} className="border border-border rounded-xl p-4 bg-bg-surface">
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -185,6 +186,11 @@ export function Shipments() {
               </div>
             </div>
           ))}
+          {filtered.length > 10 && (
+            <button onClick={() => setShowAllCards(v => !v)} className="w-full py-2 text-xs text-accent hover:text-accent/80 transition-colors">
+              {showAllCards ? 'Show less' : `Show all ${filtered.length} shipments`}
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -18,8 +18,8 @@ function NavItem({ path, label, icon }: { path: string; label: string; icon: str
       className={({ isActive }) =>
         `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
           isActive
-            ? 'bg-blue-500/15 text-blue-400 font-medium'
-            : 'text-muted hover:text-primary hover:bg-white/5'
+            ? 'bg-accent/15 text-accent font-medium'
+            : 'text-muted hover:text-primary hover:bg-secondary/5'
         }`
       }
     >
@@ -36,7 +36,7 @@ export function Layout() {
       <aside aria-label="Main navigation" className="hidden md:flex flex-col w-16 lg:w-56 border-r border-border flex-shrink-0 bg-bg-sidebar">
         <div className="p-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-500 rounded-md flex items-center justify-center text-white text-xs font-bold">M2</div>
+            <div className="w-7 h-7 bg-accent rounded-md flex items-center justify-center text-white text-xs font-bold">M2</div>
             <span className="hidden lg:block text-sm font-semibold text-primary">M2Flow</span>
           </div>
         </div>
@@ -66,7 +66,7 @@ export function Layout() {
               aria-label={label}
               className={({ isActive }) =>
                 `flex-1 flex flex-col items-center gap-1 py-2 text-xs transition-colors ${
-                  isActive ? 'text-blue-400' : 'text-muted'
+                  isActive ? 'text-accent' : 'text-muted'
                 }`
               }
             >
